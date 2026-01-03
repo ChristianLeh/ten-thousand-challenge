@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>10k Challenge</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#3694E9" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+
+    <nav class="nav">
+      <button class="tab active" data-view="today">Heute</button>
+      <button class="tab" data-view="stats">Statistik</button>
+      <button class="tab" data-view="settings">Settings</button>
+    </nav>
+
+    <!-- Heute -->
+    <section id="todayView">
+      <h2 id="yearTotalToday">0</h2>
+
+      <input type="date" id="datePicker" />
+
+      <div id="todayExercises"></div>
+
+      <button id="saveTodayBtn">Bestätigen</button>
+    </section>
+
+    <!-- Statistik -->
+    <section id="statsView" hidden>
+      <select id="yearSelect"></select>
+      <div class="year-summary">
+        <span>Gesamt</span>
+        <strong id="yearTotalStats">0</strong>
+      </div>
+      <div id="yearGrid"></div>
+    </section>
+
+    <!-- Settings -->
+    <section id="settingsView" hidden>
+      <div id="exerciseList"></div>
+      <button id="addExerciseBtn" class="add-btn">＋</button>
+    </section>
+
+  </main>
+
+  <!-- Exercise Modal -->
+  <div id="exerciseModal" class="modal" hidden>
+    <div class="modal-content">
+      <h3>Übung</h3>
+
+      <input id="exerciseName" placeholder="Name" />
+
+      <input id="exerciseWeight" type="number" min="1" value="1" />
+
+      <select id="exerciseUnit">
+        <option value="Wdh">Wdh</option>
+        <option value="Minuten">Minuten</option>
+        <option value="km">km</option>
+      </select>
+
+      <div class="modal-actions">
+        <button id="exerciseSaveBtn">Save</button>
+        <button id="exerciseCancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div id="deleteModal" class="modal" hidden>
+    <div class="modal-content">
+      <p id="deleteText"></p>
+      <div class="modal-actions">
+        <button id="deleteConfirmBtn">Confirm</button>
+        <button id="deleteCancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
