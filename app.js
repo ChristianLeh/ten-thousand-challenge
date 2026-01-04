@@ -132,6 +132,8 @@ saveTodayBtn.onclick = () => {
 const yearSelect = document.getElementById("yearSelect");
 const yearTotalStats = document.getElementById("yearTotalStats");
 const yearGrid = document.getElementById("yearGrid");
+const statsPlot = document.getElementById("statsPlot");
+const ctx = statsPlot.getContext("2d");
 
 function populateYearSelect() {
   const data = loadData();
@@ -161,6 +163,7 @@ function updateYearTotal(year) {
   yearTotalStats.textContent = sum;
 }
 
+/* ---------- Render Calendar ---------- */
 function renderYearCalendar(year) {
   const data = loadData();
   yearGrid.innerHTML = "";
@@ -208,6 +211,46 @@ function renderYearCalendar(year) {
   }
 
   updateYearTotal(year);
+  renderPlot(year);
+}
+
+/* ---------- Plot ---------- */
+function renderPlot(year) {
+  const data = loadData();
+  const entries = Object.entries(data.entries)
+    .filter(([date]) => date.startsWith(year))
+    .sort(([a],[b]) => new Date(a) - new Date(b));
+
+  const width = statsPlot.width;
+  const height = statsPlot.height;
+  ctx.clearRect(0, 0, width, height);
+
+  if (!entries.length) return;
+
+  const values = entries.map(([_, exs]) => {
+    let sum = 0;
+    Object.entries(exs).forEach(([idx, val]) => {
+      const weight = data.exercises[idx]?.weight || 1;
+      sum += Math.floor(val / weight);
+    });
+    return sum;
+  });
+
+  const maxVal = Math.max(...values, 10);
+  const stepX = width / (values.length - 1 || 1);
+
+  ctx.beginPath();
+  ctx.strokeStyle = "#3694E9";
+  ctx.lineWidth = 2;
+
+  values.forEach((v, i) => {
+    const x = i * stepX;
+    const y = height - (v / maxVal) * height;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  ctx.stroke();
 }
 
 /* ---------- Tab Switching ---------- */
@@ -226,7 +269,6 @@ document.querySelectorAll(".tab").forEach(btn => {
   };
 });
 
-/* ---------- Year select event ---------- */
 yearSelect.onchange = () => renderYearCalendar(yearSelect.value);
 
 /* ---------- Event Buttons ---------- */
@@ -264,11 +306,8 @@ document.getElementById("deleteConfirmBtn").onclick = () => {
 function updateYearTotalToday() {
   const data = loadData();
   let sum = 0;
-  Object.entries(data.entries).forEach(([date, exs]) => {
-    Object.entries(exs).forEach(([idx, val]) => {
-      const weight = data.exercises[idx]?.weight || 1;
-      sum += val; // total absolute sum for today tab
-    });
+  Object.values(data.entries).forEach(exs => {
+    Object.entries(exs).forEach(([idx, val]) => sum += val);
   });
   yearTotalToday.textContent = sum;
 }

@@ -131,3 +131,11 @@ body {
     color: white;
   }
   
+  /* Plot */
+  #statsPlot {
+    width: 100%;
+    margin: 1rem 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
