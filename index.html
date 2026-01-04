@@ -15,21 +15,39 @@
 <body>
   <main class="container">
 
+    <!-- App Header -->
+    <header class="heading">
+      <img class="tkc-icon" src="./icons/tkc-icon-72.png" alt="10k icon">
+      <h1>10k Challenge</h1>
+    </header>
+
+    <!-- Tabs -->
     <nav class="nav">
-      <button class="tab active" data-view="today">Heute</button>
+      <button class="tab active" data-view="current">Aktuell</button>
       <button class="tab" data-view="stats">Statistik</button>
       <button class="tab" data-view="settings">Settings</button>
     </nav>
 
-    <!-- Heute -->
-    <section id="todayView">
-      <h2 id="yearTotalToday">0</h2>
+    <!-- Aktuell -->
+    <section id="currentView">
+      <div class="year-summary">
+        <span>Gesamt</span>
+        <strong id="yearTotalCurrent">0</strong>
+      </div>
 
-      <input type="date" id="datePicker" />
+      <hr>
 
-      <div id="todayExercises"></div>
+      <div class="date-select">
+        <label>Leistungen vom:</label>
+        <input type="date" id="datePicker" class="date-input" />  
+      </div>   
 
-      <button id="saveTodayBtn">Bestätigen</button>
+      <div id="currentExercises"></div>
+
+      <div class="save-current-btn-container">
+        <button id="saveCurrentBtn">Speichern</button>
+      </div>
+      
     </section>
 
     <!-- Statistik -->
@@ -41,7 +59,6 @@
       </div>
 
       <canvas id="statsPlot" width="360" height="150"></canvas>
-
       <div id="yearGrid"></div>
     </section>
 
@@ -59,7 +76,6 @@
       <h3>Übung</h3>
 
       <input id="exerciseName" placeholder="Name" />
-
       <input id="exerciseWeight" type="number" min="1" value="1" />
 
       <select id="exerciseUnit">

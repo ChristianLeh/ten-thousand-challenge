@@ -77,25 +77,42 @@ function renderExercises() {
   });
 }
 
-/* ---------- Today Tab ---------- */
-const todayExercisesDiv = document.getElementById("todayExercises");
-const datePicker = document.getElementById("datePicker");
-const yearTotalToday = document.getElementById("yearTotalToday");
-const saveTodayBtn = document.getElementById("saveTodayBtn");
-
-function renderToday() {
+/* ---------- Gemeinsame Jahres-Berechnung ---------- */
+function calculateYearTotal(year) {
   const data = loadData();
-  todayExercisesDiv.innerHTML = "";
+  let sum = 0;
+
+  Object.entries(data.entries).forEach(([date, exs]) => {
+    if (date.startsWith(year)) {
+      Object.entries(exs).forEach(([idx, val]) => {
+        const weight = data.exercises[idx]?.weight || 1;
+        sum += Math.floor(val / weight);
+      });
+    }
+  });
+
+  return sum;
+}
+
+/* ---------- Aktuell Tab (ehem. Heute) ---------- */
+const currentExercisesDiv = document.getElementById("currentExercises");
+const datePicker = document.getElementById("datePicker");
+const yearTotalCurrent = document.getElementById("yearTotalCurrent");
+const saveCurrentBtn = document.getElementById("saveCurrentBtn");
+
+function renderCurrent() {
+  const data = loadData();
+  currentExercisesDiv.innerHTML = "";
 
   const selectedDate = datePicker.value ? new Date(datePicker.value) : new Date();
   datePicker.value = dateKey(selectedDate);
 
   data.exercises.forEach((ex, i) => {
-    const container = document.createElement("div");
+    const row = document.createElement("div");
+    row.className = "exercise-row";
 
     const label = document.createElement("label");
     label.textContent = ex.name;
-    container.appendChild(label);
 
     const input = document.createElement("input");
     input.type = "number";
@@ -103,32 +120,31 @@ function renderToday() {
     input.value = data.entries[dateKey(selectedDate)]?.[i] || 0;
     input.dataset.index = i;
 
-    container.appendChild(input);
-    todayExercisesDiv.appendChild(container);
+    row.append(label, input);
+    currentExercisesDiv.appendChild(row);
   });
 
-  updateYearTotalToday();
+  yearTotalCurrent.textContent =
+    calculateYearTotal(selectedDate.getFullYear().toString());
 }
 
-saveTodayBtn.onclick = () => {
+saveCurrentBtn.onclick = () => {
   const data = loadData();
-  const selectedDate = datePicker.value ? new Date(datePicker.value) : new Date();
-  const key = dateKey(selectedDate);
+  const key = dateKey(new Date(datePicker.value));
 
   if (!data.entries[key]) data.entries[key] = {};
 
-  todayExercisesDiv.querySelectorAll("input").forEach(input => {
+  currentExercisesDiv.querySelectorAll("input").forEach(input => {
     const idx = input.dataset.index;
     const val = parseInt(input.value) || 0;
-    if (data.entries[key][idx]) data.entries[key][idx] += val;
-    else data.entries[key][idx] = val;
+    data.entries[key][idx] = (data.entries[key][idx] || 0) + val;
   });
 
   saveData(data);
-  renderToday();
+  renderCurrent();
 };
 
-/* ---------- Statistics Tab ---------- */
+/* ---------- Statistik Tab (UNVERÄNDERT) ---------- */
 const yearSelect = document.getElementById("yearSelect");
 const yearTotalStats = document.getElementById("yearTotalStats");
 const yearGrid = document.getElementById("yearGrid");
@@ -139,6 +155,7 @@ function populateYearSelect() {
   const data = loadData();
   const years = new Set();
   Object.keys(data.entries).forEach(k => years.add(k.slice(0, 4)));
+
   yearSelect.innerHTML = "";
   Array.from(years).sort().forEach(y => {
     const option = document.createElement("option");
@@ -146,24 +163,17 @@ function populateYearSelect() {
     option.textContent = y;
     yearSelect.appendChild(option);
   });
-  if (yearSelect.options.length) yearSelect.value = yearSelect.options[0].value;
+
+  if (yearSelect.options.length) {
+    yearSelect.value = yearSelect.options[0].value;
+  }
 }
 
 function updateYearTotal(year) {
-  const data = loadData();
-  let sum = 0;
-  Object.entries(data.entries).forEach(([date, exs]) => {
-    if (date.startsWith(year)) {
-      Object.entries(exs).forEach(([idx, val]) => {
-        const weight = data.exercises[idx]?.weight || 1;
-        sum += Math.floor(val / weight);
-      });
-    }
-  });
-  yearTotalStats.textContent = sum;
+  yearTotalStats.textContent = calculateYearTotal(year);
 }
 
-/* ---------- Render Calendar ---------- */
+/* ---------- Kalender ---------- */
 function renderYearCalendar(year) {
   const data = loadData();
   yearGrid.innerHTML = "";
@@ -173,7 +183,9 @@ function renderYearCalendar(year) {
     monthDiv.className = "month";
 
     const title = document.createElement("h3");
-    title.textContent = new Date(year, month).toLocaleString("de-DE", { month: "long" });
+    title.textContent = new Date(year, month).toLocaleString("de-DE", {
+      month: "long"
+    });
     monthDiv.appendChild(title);
 
     const daysDiv = document.createElement("div");
@@ -219,7 +231,7 @@ function renderPlot(year) {
   const data = loadData();
   const entries = Object.entries(data.entries)
     .filter(([date]) => date.startsWith(year))
-    .sort(([a],[b]) => new Date(a) - new Date(b));
+    .sort(([a], [b]) => new Date(a) - new Date(b));
 
   const width = statsPlot.width;
   const height = statsPlot.height;
@@ -258,10 +270,13 @@ document.querySelectorAll(".tab").forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll("section").forEach(v => v.hidden = true);
     document.getElementById(btn.dataset.view + "View").hidden = false;
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+
+    document.querySelectorAll(".tab").forEach(t =>
+      t.classList.remove("active")
+    );
     btn.classList.add("active");
 
-    if (btn.dataset.view === "today") renderToday();
+    if (btn.dataset.view === "current") renderCurrent();
     if (btn.dataset.view === "stats") {
       populateYearSelect();
       renderYearCalendar(yearSelect.value);
@@ -269,12 +284,18 @@ document.querySelectorAll(".tab").forEach(btn => {
   };
 });
 
-yearSelect.onchange = () => renderYearCalendar(yearSelect.value);
+yearSelect.onchange = () =>
+  renderYearCalendar(yearSelect.value);
 
-/* ---------- Event Buttons ---------- */
-document.getElementById("addExerciseBtn").onclick = () => openExerciseModal();
-document.getElementById("exerciseCancelBtn").onclick = closeAllModals;
-document.getElementById("deleteCancelBtn").onclick = closeAllModals;
+/* ---------- Buttons ---------- */
+document.getElementById("addExerciseBtn").onclick = () =>
+  openExerciseModal();
+
+document.getElementById("exerciseCancelBtn").onclick =
+  closeAllModals;
+
+document.getElementById("deleteCancelBtn").onclick =
+  closeAllModals;
 
 document.getElementById("exerciseSaveBtn").onclick = () => {
   const data = loadData();
@@ -290,7 +311,7 @@ document.getElementById("exerciseSaveBtn").onclick = () => {
   saveData(data);
   closeAllModals();
   renderExercises();
-  renderToday();
+  renderCurrent();
 };
 
 document.getElementById("deleteConfirmBtn").onclick = () => {
@@ -299,26 +320,16 @@ document.getElementById("deleteConfirmBtn").onclick = () => {
   saveData(data);
   closeAllModals();
   renderExercises();
-  renderToday();
+  renderCurrent();
 };
-
-/* ---------- Today Total ---------- */
-function updateYearTotalToday() {
-  const data = loadData();
-  let sum = 0;
-  Object.values(data.entries).forEach(exs => {
-    Object.entries(exs).forEach(([idx, val]) => sum += val);
-  });
-  yearTotalToday.textContent = sum;
-}
 
 /* ---------- Init ---------- */
 function init() {
   closeAllModals();
   renderExercises();
-  renderToday();
+  renderCurrent();
   populateYearSelect();
-  renderYearCalendar(yearSelect.value);
+  if (yearSelect.value) renderYearCalendar(yearSelect.value);
 }
 
 document.addEventListener("DOMContentLoaded", init);
