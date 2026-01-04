@@ -16,8 +16,12 @@ function saveData(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+/* ✅ FIX: Lokalen Datumsschlüssel verwenden (kein UTC) */
 function dateKey(date) {
-  return date.toISOString().slice(0, 10);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 /* ---------- Modal Handling ---------- */
@@ -94,7 +98,7 @@ function calculateYearTotal(year) {
   return sum;
 }
 
-/* ---------- Aktuell Tab (ehem. Heute) ---------- */
+/* ---------- Aktuell Tab ---------- */
 const currentExercisesDiv = document.getElementById("currentExercises");
 const datePicker = document.getElementById("datePicker");
 const yearTotalCurrent = document.getElementById("yearTotalCurrent");
@@ -104,7 +108,10 @@ function renderCurrent() {
   const data = loadData();
   currentExercisesDiv.innerHTML = "";
 
-  const selectedDate = datePicker.value ? new Date(datePicker.value) : new Date();
+  const selectedDate = datePicker.value
+    ? new Date(datePicker.value)
+    : new Date();
+
   datePicker.value = dateKey(selectedDate);
 
   data.exercises.forEach((ex, i) => {
@@ -144,7 +151,11 @@ saveCurrentBtn.onclick = () => {
   renderCurrent();
 };
 
-/* ---------- Statistik Tab (UNVERÄNDERT) ---------- */
+datePicker.onchange = () => {
+  renderCurrent();
+};
+
+/* ---------- Statistik Tab ---------- */
 const yearSelect = document.getElementById("yearSelect");
 const yearTotalStats = document.getElementById("yearTotalStats");
 const yearGrid = document.getElementById("yearGrid");
@@ -288,8 +299,8 @@ yearSelect.onchange = () =>
   renderYearCalendar(yearSelect.value);
 
 /* ---------- Buttons ---------- */
-document.getElementById("addExerciseBtn").onclick = () =>
-  openExerciseModal();
+document.getElementById("addExerciseBtn").onclick =
+  () => openExerciseModal();
 
 document.getElementById("exerciseCancelBtn").onclick =
   closeAllModals;
