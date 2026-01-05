@@ -221,7 +221,6 @@ function renderYearCalendar(year) {
         cell.textContent = day;
       }
 
-      /* ✅ NEU: Klick → Aktuell-Tab mit Datum */
       cell.onclick = () => {
         datePicker.value = key;
         switchToTab("current");
@@ -238,7 +237,7 @@ function renderYearCalendar(year) {
   renderPlot(year);
 }
 
-/* ---------- Plot ---------- */
+/* ---------- Plot (KUMULATIV + 10k LINIE) ---------- */
 function renderPlot(year) {
   const data = loadData();
   const entries = Object.entries(data.entries)
@@ -251,7 +250,8 @@ function renderPlot(year) {
 
   if (!entries.length) return;
 
-  const values = entries.map(([_, exs]) => {
+  /* Tageswerte */
+  const daily = entries.map(([_, exs]) => {
     let sum = 0;
     Object.entries(exs).forEach(([idx, val]) => {
       const weight = data.exercises[idx]?.weight || 1;
@@ -260,14 +260,33 @@ function renderPlot(year) {
     return sum;
   });
 
-  const maxVal = Math.max(...values, 10);
-  const stepX = width / (values.length - 1 || 1);
+  /* Kumulativ */
+  const cumulative = [];
+  daily.reduce((acc, v, i) => {
+    cumulative[i] = acc + v;
+    return cumulative[i];
+  }, 0);
 
+  const maxVal = Math.max(10000, ...cumulative);
+  const stepX = width / (cumulative.length - 1 || 1);
+
+  /* 10k Linie */
+  const y10k = height - (10000 / maxVal) * height;
+  ctx.beginPath();
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = "#999";
+  ctx.lineWidth = 1;
+  ctx.moveTo(0, y10k);
+  ctx.lineTo(width, y10k);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  /* Kumulative Linie */
   ctx.beginPath();
   ctx.strokeStyle = "#3694E9";
   ctx.lineWidth = 2;
 
-  values.forEach((v, i) => {
+  cumulative.forEach((v, i) => {
     const x = i * stepX;
     const y = height - (v / maxVal) * height;
     if (i === 0) ctx.moveTo(x, y);
