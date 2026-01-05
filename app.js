@@ -16,7 +16,6 @@ function saveData(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-/* ✅ FIX: Lokalen Datumsschlüssel verwenden (kein UTC) */
 function dateKey(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -144,16 +143,14 @@ saveCurrentBtn.onclick = () => {
   currentExercisesDiv.querySelectorAll("input").forEach(input => {
     const idx = input.dataset.index;
     const val = parseInt(input.value) || 0;
-    data.entries[key][idx] = (data.entries[key][idx] || 0) + val;
+    data.entries[key][idx] = val;
   });
 
   saveData(data);
   renderCurrent();
 };
 
-datePicker.onchange = () => {
-  renderCurrent();
-};
+datePicker.onchange = renderCurrent;
 
 /* ---------- Statistik Tab ---------- */
 const yearSelect = document.getElementById("yearSelect");
@@ -203,13 +200,14 @@ function renderYearCalendar(year) {
     daysDiv.className = "days";
 
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
 
     for (let day = 1; day <= daysInMonth; day++) {
       const d = new Date(year, month, day);
       const key = dateKey(d);
+
       const cell = document.createElement("div");
       cell.className = "day";
+      cell.dataset.date = key;
 
       if (data.entries[key]) {
         let daySum = 0;
@@ -219,12 +217,15 @@ function renderYearCalendar(year) {
         });
         cell.textContent = daySum;
         cell.classList.add("ok");
-      } else if (d < today) {
-        cell.textContent = "✖";
-        cell.classList.add("fail");
       } else {
         cell.textContent = day;
       }
+
+      /* ✅ NEU: Klick → Aktuell-Tab mit Datum */
+      cell.onclick = () => {
+        datePicker.value = key;
+        switchToTab("current");
+      };
 
       daysDiv.appendChild(cell);
     }
@@ -277,22 +278,23 @@ function renderPlot(year) {
 }
 
 /* ---------- Tab Switching ---------- */
+function switchToTab(view) {
+  document.querySelectorAll("section").forEach(v => v.hidden = true);
+  document.getElementById(view + "View").hidden = false;
+
+  document.querySelectorAll(".tab").forEach(t =>
+    t.classList.toggle("active", t.dataset.view === view)
+  );
+
+  if (view === "current") renderCurrent();
+  if (view === "stats") {
+    populateYearSelect();
+    renderYearCalendar(yearSelect.value);
+  }
+}
+
 document.querySelectorAll(".tab").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll("section").forEach(v => v.hidden = true);
-    document.getElementById(btn.dataset.view + "View").hidden = false;
-
-    document.querySelectorAll(".tab").forEach(t =>
-      t.classList.remove("active")
-    );
-    btn.classList.add("active");
-
-    if (btn.dataset.view === "current") renderCurrent();
-    if (btn.dataset.view === "stats") {
-      populateYearSelect();
-      renderYearCalendar(yearSelect.value);
-    }
-  };
+  btn.onclick = () => switchToTab(btn.dataset.view);
 });
 
 yearSelect.onchange = () =>
