@@ -75,9 +75,17 @@ button {
   width: 100%;
 }
 
+.add-exercise-button-container {
+  display: flex;
+  justify-content: center;
+}
+
 .add-btn {
   width: 100%;
-  font-size: 1.4rem;
+  font-size: 1rem;
+  margin: 1rem;
+  width: 70%;
+  font-weight: 600;
 }
 
 /* ---------------- Modals ---------------- */
@@ -297,3 +305,106 @@ input:checked + .slider:before {
   border: 1px solid #ccc;
   border-radius: 10px;
 }
+
+/* ---------------- Settings Tab / Exercises ---------------- */
+
+#exerciseList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.exercise-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto auto;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+}
+
+.exercise-item label {
+  font-weight: 600;
+  color: #333;
+}
+
+.exercise-item input {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 2px solid #3694E9;
+  background: white;
+  color: #3694E9;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.exercise-item select {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 2px solid #3694E9;
+  background: white;
+  color: #3694E9;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.exercise-item button {
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+}
+
+/* Responsive Anpassung für kleine Bildschirme */
+@media (max-width: 480px) {
+  .exercise-item {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, auto);
+    gap: 0.4rem;
+  }
+  .exercise-item button {
+    width: 48%;
+  }
+  .exercise-item .btn-group {
+    display: flex;
+    gap: 0.4rem;
+  }
+}
+
+/* ---------------- Exercise Modal ---------------- */
+#exerciseModal .modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+#exerciseModal label {
+  font-weight: 600;
+  color: #333;
+}
+
+#exerciseModal input,
+#exerciseModal select {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 2px solid #3694E9;
+  background: white;
+  color: #3694E9;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.modal-actions button {
+  flex: 0 0 auto;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+}
+

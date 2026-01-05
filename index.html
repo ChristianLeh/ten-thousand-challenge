@@ -74,7 +74,9 @@
     <!-- Settings -->
     <section id="settingsView" hidden>
       <div id="exerciseList"></div>
-      <button id="addExerciseBtn" class="add-btn">＋</button>
+      <div class="add-exercise-button-container">
+        <button id="addExerciseBtn" class="add-btn">＋</button>
+      </div>
     </section>
 
   </main>
@@ -84,12 +86,16 @@
     <div class="modal-content">
       <h3>Übung</h3>
 
+      <label for="exerciseName">Name</label>
       <input id="exerciseName" placeholder="Name" />
+
+      <label for="exerciseWeight">Gewicht</label>
       <input id="exerciseWeight" type="number" min="1" value="1" />
 
+      <label for="exerciseUnit">Einheit</label>
       <select id="exerciseUnit">
         <option value="Wdh">Wdh</option>
-        <option value="Minuten">Minuten</option>
+        <option value="min">Minuten</option>
         <option value="km">km</option>
       </select>
 

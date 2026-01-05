@@ -62,24 +62,44 @@ function renderExercises() {
 
   loadData().exercises.forEach((ex, i) => {
     const row = document.createElement("div");
-    row.textContent = `${ex.name} (${ex.weight} ${ex.unit})`;
+    row.className = "exercise-item";
 
-    const edit = document.createElement("button");
-    edit.textContent = "✎";
-    edit.onclick = () => openExerciseModal(i);
+    const label = document.createElement("label");
+    label.textContent = ex.name;
 
-    const del = document.createElement("button");
-    del.textContent = "✖";
-    del.onclick = () => {
+    const weightInput = document.createElement("input");
+    weightInput.type = "number";
+    weightInput.value = ex.weight;
+    weightInput.min = 1;
+    weightInput.disabled = true;
+
+    const unitSelect = document.createElement("select");
+    ["Wdh", "min", "km"].forEach(u => {
+      const opt = document.createElement("option");
+      opt.value = u;
+      opt.textContent = u;
+      if (ex.unit === u) opt.selected = true;
+      unitSelect.appendChild(opt);
+    });
+    unitSelect.disabled = true;
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✎";
+    editBtn.onclick = () => openExerciseModal(i);
+
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "✖";
+    delBtn.onclick = () => {
       deletingIndex = i;
       deleteText.textContent = `Übung "${ex.name}" löschen?`;
       deleteModal.hidden = false;
     };
 
-    row.append(edit, del);
+    row.append(label, weightInput, unitSelect, editBtn, delBtn);
     list.appendChild(row);
   });
 }
+
 
 /* ---------- Gemeinsame Jahres-Berechnung ---------- */
 function calculateYearTotal(year) {
