@@ -248,10 +248,8 @@ function renderYearCalendar(year) {
 
       cell.onclick = () => {
         datePicker.value = key;
-      
         addMode = false;
         addModeToggle.checked = false;
-      
         switchToTab("current");
       };
 
@@ -355,6 +353,38 @@ document.querySelectorAll(".tab").forEach(btn => {
 
 yearSelect.onchange = () =>
   renderYearCalendar(yearSelect.value);
+
+/* ---------- Buttons für Modals im Settings Tab ---------- */
+document.getElementById("addExerciseBtn").onclick = () => openExerciseModal();
+
+document.getElementById("exerciseCancelBtn").onclick = closeAllModals;
+document.getElementById("deleteCancelBtn").onclick = closeAllModals;
+
+document.getElementById("exerciseSaveBtn").onclick = () => {
+  const data = loadData();
+  const ex = {
+    name: exerciseName.value.trim(),
+    weight: Number(exerciseWeight.value),
+    unit: exerciseUnit.value
+  };
+
+  if (editingIndex === null) data.exercises.push(ex);
+  else data.exercises[editingIndex] = ex;
+
+  saveData(data);
+  closeAllModals();
+  renderExercises();
+  renderCurrent();
+};
+
+document.getElementById("deleteConfirmBtn").onclick = () => {
+  const data = loadData();
+  data.exercises.splice(deletingIndex, 1);
+  saveData(data);
+  closeAllModals();
+  renderExercises();
+  renderCurrent();
+};
 
 /* ---------- Init ---------- */
 function init() {
