@@ -3,6 +3,7 @@ const STORAGE_KEY = "TenKChallengeData";
 /* ---------- State ---------- */
 let editingIndex = null;
 let deletingIndex = null;
+let addMode = false;
 
 /* ---------- Helpers ---------- */
 function loadData() {
@@ -102,6 +103,7 @@ const currentExercisesDiv = document.getElementById("currentExercises");
 const datePicker = document.getElementById("datePicker");
 const yearTotalCurrent = document.getElementById("yearTotalCurrent");
 const saveCurrentBtn = document.getElementById("saveCurrentBtn");
+const addModeToggle = document.getElementById("addModeToggle");
 
 function renderCurrent() {
   const data = loadData();
@@ -111,7 +113,8 @@ function renderCurrent() {
     ? new Date(datePicker.value)
     : new Date();
 
-  datePicker.value = dateKey(selectedDate);
+  const key = dateKey(selectedDate);
+  datePicker.value = key;
 
   data.exercises.forEach((ex, i) => {
     const row = document.createElement("div");
@@ -123,8 +126,13 @@ function renderCurrent() {
     const input = document.createElement("input");
     input.type = "number";
     input.min = 0;
-    input.value = data.entries[dateKey(selectedDate)]?.[i] || 0;
     input.dataset.index = i;
+
+    if (addMode) {
+      input.value = 0;
+    } else {
+      input.value = data.entries[key]?.[i] || 0;
+    }
 
     row.append(label, input);
     currentExercisesDiv.appendChild(row);
@@ -143,7 +151,12 @@ saveCurrentBtn.onclick = () => {
   currentExercisesDiv.querySelectorAll("input").forEach(input => {
     const idx = input.dataset.index;
     const val = parseInt(input.value) || 0;
-    data.entries[key][idx] = val;
+
+    if (addMode) {
+      data.entries[key][idx] = (data.entries[key][idx] || 0) + val;
+    } else {
+      data.entries[key][idx] = val;
+    }
   });
 
   saveData(data);
@@ -151,6 +164,11 @@ saveCurrentBtn.onclick = () => {
 };
 
 datePicker.onchange = renderCurrent;
+
+addModeToggle.onchange = () => {
+  addMode = addModeToggle.checked;
+  renderCurrent();
+};
 
 /* ---------- Statistik Tab ---------- */
 const yearSelect = document.getElementById("yearSelect");
@@ -236,7 +254,7 @@ function renderYearCalendar(year) {
   renderPlot(year);
 }
 
-/* ---------- Plot: kumulativ + 1000er Linien ---------- */
+/* ---------- Plot (unverändert) ---------- */
 function renderPlot(year) {
   const data = loadData();
   const entries = Object.entries(data.entries)
@@ -258,20 +276,17 @@ function renderPlot(year) {
     return sum;
   });
 
-  /* kumulative Werte */
   const cumulative = [];
   daily.reduce((acc, v, i) => {
     cumulative[i] = acc + v;
     return cumulative[i];
   }, 0);
 
-  /* 🔧 Headroom oberhalb von 10.000 */
   const rawMax = Math.max(10000, ...cumulative);
   const maxVal = Math.ceil(rawMax / 1000) * 1000 + 1000;
 
   const stepX = width / (cumulative.length - 1 || 1);
 
-  /* ---------- Referenzlinien ---------- */
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
 
@@ -288,14 +303,10 @@ function renderPlot(year) {
 
     ctx.setLineDash([]);
     ctx.fillStyle = v === 10000 ? "#E53935" : "#777";
-    ctx.font = v === 10000
-      ? "bold 12px system-ui"
-      : "10px system-ui";
-
+    ctx.font = v === 10000 ? "bold 12px system-ui" : "10px system-ui";
     ctx.fillText(v.toString(), 4, y - 2);
   }
 
-  /* ---------- Kumulative Linie ---------- */
   ctx.beginPath();
   ctx.strokeStyle = "#3694E9";
   ctx.lineWidth = 2;
@@ -309,7 +320,6 @@ function renderPlot(year) {
 
   ctx.stroke();
 }
-
 
 /* ---------- Tab Switching ---------- */
 function switchToTab(view) {

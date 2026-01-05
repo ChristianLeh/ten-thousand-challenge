@@ -4,7 +4,12 @@ const APP_SHELL = [
   "./index.html",
   "./style.css",
   "./app.js",
-  "./manifest.json"
+  "./manifest.json",
+  "./icons/tkc-icon-72.png",
+  "./icons/tkc-icon-96.png",
+  "./icons/tkc-icon-144.png",
+  "./icons/tkc-icon-192.png",
+  "./icons/tkc-icon-512.png"
 ];
 
 /* ---------- INSTALL ---------- */
