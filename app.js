@@ -160,10 +160,18 @@ saveCurrentBtn.onclick = () => {
   });
 
   saveData(data);
+  if (addMode) {
+    addMode = false;
+    addModeToggle.checked = false;
+  }
   renderCurrent();
 };
 
-datePicker.onchange = renderCurrent;
+datePicker.onchange = () => {
+  addMode = false;
+  addModeToggle.checked = false;
+  renderCurrent();
+};
 
 addModeToggle.onchange = () => {
   addMode = addModeToggle.checked;
@@ -240,6 +248,10 @@ function renderYearCalendar(year) {
 
       cell.onclick = () => {
         datePicker.value = key;
+      
+        addMode = false;
+        addModeToggle.checked = false;
+      
         switchToTab("current");
       };
 
