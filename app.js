@@ -207,7 +207,6 @@ function renderYearCalendar(year) {
 
       const cell = document.createElement("div");
       cell.className = "day";
-      cell.dataset.date = key;
 
       if (data.entries[key]) {
         let daySum = 0;
@@ -237,7 +236,7 @@ function renderYearCalendar(year) {
   renderPlot(year);
 }
 
-/* ---------- Plot (KUMULATIV + 10k LINIE) ---------- */
+/* ---------- Plot: kumulativ + 1000er Linien ---------- */
 function renderPlot(year) {
   const data = loadData();
   const entries = Object.entries(data.entries)
@@ -250,7 +249,6 @@ function renderPlot(year) {
 
   if (!entries.length) return;
 
-  /* Tageswerte */
   const daily = entries.map(([_, exs]) => {
     let sum = 0;
     Object.entries(exs).forEach(([idx, val]) => {
@@ -260,28 +258,44 @@ function renderPlot(year) {
     return sum;
   });
 
-  /* Kumulativ */
+  /* kumulative Werte */
   const cumulative = [];
   daily.reduce((acc, v, i) => {
     cumulative[i] = acc + v;
     return cumulative[i];
   }, 0);
 
-  const maxVal = Math.max(10000, ...cumulative);
+  /* 🔧 Headroom oberhalb von 10.000 */
+  const rawMax = Math.max(10000, ...cumulative);
+  const maxVal = Math.ceil(rawMax / 1000) * 1000 + 1000;
+
   const stepX = width / (cumulative.length - 1 || 1);
 
-  /* 10k Linie */
-  const y10k = height - (10000 / maxVal) * height;
-  ctx.beginPath();
-  ctx.setLineDash([4, 4]);
-  ctx.strokeStyle = "#999";
-  ctx.lineWidth = 1;
-  ctx.moveTo(0, y10k);
-  ctx.lineTo(width, y10k);
-  ctx.stroke();
-  ctx.setLineDash([]);
+  /* ---------- Referenzlinien ---------- */
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
 
-  /* Kumulative Linie */
+  for (let v = 1000; v <= maxVal; v += 1000) {
+    const y = height - (v / maxVal) * height;
+
+    ctx.beginPath();
+    ctx.strokeStyle = v === 10000 ? "#E53935" : "#ccc";
+    ctx.lineWidth = v === 10000 ? 2 : 1;
+    ctx.setLineDash(v === 10000 ? [] : [4, 4]);
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+    ctx.fillStyle = v === 10000 ? "#E53935" : "#777";
+    ctx.font = v === 10000
+      ? "bold 12px system-ui"
+      : "10px system-ui";
+
+    ctx.fillText(v.toString(), 4, y - 2);
+  }
+
+  /* ---------- Kumulative Linie ---------- */
   ctx.beginPath();
   ctx.strokeStyle = "#3694E9";
   ctx.lineWidth = 2;
@@ -295,6 +309,7 @@ function renderPlot(year) {
 
   ctx.stroke();
 }
+
 
 /* ---------- Tab Switching ---------- */
 function switchToTab(view) {
@@ -318,42 +333,6 @@ document.querySelectorAll(".tab").forEach(btn => {
 
 yearSelect.onchange = () =>
   renderYearCalendar(yearSelect.value);
-
-/* ---------- Buttons ---------- */
-document.getElementById("addExerciseBtn").onclick =
-  () => openExerciseModal();
-
-document.getElementById("exerciseCancelBtn").onclick =
-  closeAllModals;
-
-document.getElementById("deleteCancelBtn").onclick =
-  closeAllModals;
-
-document.getElementById("exerciseSaveBtn").onclick = () => {
-  const data = loadData();
-  const ex = {
-    name: exerciseName.value.trim(),
-    weight: Number(exerciseWeight.value),
-    unit: exerciseUnit.value
-  };
-
-  if (editingIndex === null) data.exercises.push(ex);
-  else data.exercises[editingIndex] = ex;
-
-  saveData(data);
-  closeAllModals();
-  renderExercises();
-  renderCurrent();
-};
-
-document.getElementById("deleteConfirmBtn").onclick = () => {
-  const data = loadData();
-  data.exercises.splice(deletingIndex, 1);
-  saveData(data);
-  closeAllModals();
-  renderExercises();
-  renderCurrent();
-};
 
 /* ---------- Init ---------- */
 function init() {
