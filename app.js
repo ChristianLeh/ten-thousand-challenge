@@ -143,10 +143,19 @@ function renderCurrent() {
     const label = document.createElement("label");
     label.textContent = ex.name;
 
+    const inputUnit = document.createElement("div");
+    inputUnit.className = "exercise-input-unit";
+
     const input = document.createElement("input");
     input.type = "number";
     input.min = 0;
     input.dataset.index = i;
+
+    const unit = document.createElement("span");
+    unit.className = "exercise-unit";
+    unit.textContent = ex.unit;
+
+    inputUnit.append(input, unit)
 
     if (addMode) {
       input.value = 0;
@@ -154,7 +163,7 @@ function renderCurrent() {
       input.value = data.entries[key]?.[i] || 0;
     }
 
-    row.append(label, input);
+    row.append(label, inputUnit);
     currentExercisesDiv.appendChild(row);
   });
 
