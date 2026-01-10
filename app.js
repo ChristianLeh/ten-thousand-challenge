@@ -246,8 +246,8 @@ function renderYearCalendar(year) {
     const monthDiv = document.createElement("div");
     monthDiv.className = "month";
 
-    const title = document.createElement("h3");
-    title.className = "month-title";
+    const title = document.createElement("div");
+    title.className = "month-summary";
 
     const name = document.createElement("span");
     name.textContent = new Date(year, month).toLocaleString("de-DE", {
@@ -289,7 +289,7 @@ function renderYearCalendar(year) {
       daysDiv.appendChild(cell);
     }
 
-    const sum = document.createElement("span");
+    const sum = document.createElement("strong");
     sum.className = "month-sum";
     sum.textContent = monthSum;
 

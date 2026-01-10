@@ -290,26 +290,31 @@ input:checked + .slider:before {
   margin-bottom: 1.2rem;
 }
 
-.month h3 {
-  margin: 0 0 0.4rem 0;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #333;
-}
-
-.month-title {
+.month-summary {
+  margin: 0 0 0.5rem 0;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  background: #f0f6ff;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 0.85rem;
 }
 
-.month-sum {
-  font-weight: 700;
+.month-summary strong {
+  font-size: 1rem;
   color: #3694E9;
-  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.month-summary span {
+  text-transform: capitalize;
+  font-weight: 500;
+  font-size: 0.95rem;
 }
 
 .days {
+  margin-left: 0.75rem;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
