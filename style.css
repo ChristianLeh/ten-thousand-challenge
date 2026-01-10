@@ -138,6 +138,7 @@ button {
 .date-select label, .exercise-row label {
   width: inherit;
   align-self: center;
+  word-break: break-word;
   padding-left: 1rem;
 }
 
@@ -294,6 +295,18 @@ input:checked + .slider:before {
   font-size: 0.95rem;
   font-weight: 700;
   color: #333;
+}
+
+.month-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.month-sum {
+  font-weight: 700;
+  color: #3694E9;
+  font-size: 0.9rem;
 }
 
 .days {

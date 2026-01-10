@@ -242,14 +242,17 @@ function renderYearCalendar(year) {
   yearGrid.innerHTML = "";
 
   for (let month = 0; month < 12; month++) {
+    let monthSum = 0;
     const monthDiv = document.createElement("div");
     monthDiv.className = "month";
 
     const title = document.createElement("h3");
-    title.textContent = new Date(year, month).toLocaleString("de-DE", {
+    title.className = "month-title";
+
+    const name = document.createElement("span");
+    name.textContent = new Date(year, month).toLocaleString("de-DE", {
       month: "long"
     });
-    monthDiv.appendChild(title);
 
     const daysDiv = document.createElement("div");
     daysDiv.className = "days";
@@ -269,6 +272,7 @@ function renderYearCalendar(year) {
           const weight = data.exercises[idx]?.weight || 1;
           daySum += Math.floor(val / weight);
         });
+        monthSum += daySum;
         cell.textContent = daySum;
         cell.classList.add("ok");
       } else {
@@ -284,6 +288,13 @@ function renderYearCalendar(year) {
 
       daysDiv.appendChild(cell);
     }
+
+    const sum = document.createElement("span");
+    sum.className = "month-sum";
+    sum.textContent = monthSum;
+
+    title.append(name, sum);
+    monthDiv.appendChild(title);
 
     monthDiv.appendChild(daysDiv);
     yearGrid.appendChild(monthDiv);
