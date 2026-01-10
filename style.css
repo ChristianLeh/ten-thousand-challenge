@@ -163,6 +163,7 @@ button {
 }
 
 .exercise-unit {
+  width: 15%;
   padding: 0.6rem 0.8rem;
   font-weight: 600;
   color: #3694E9;
@@ -342,15 +343,23 @@ input:checked + .slider:before {
 
 .exercise-item {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto auto;
+  grid-template-columns:
+    minmax(0, 3fr)   /* Name */
+    1.2fr            /* Gewicht */
+    1.2fr            /* Einheit */
+    auto             /* Edit */
+    auto;            /* Delete */
   gap: 0.5rem;
   align-items: center;
   width: 100%;
 }
 
+
 .exercise-item label {
   font-weight: 600;
   color: #333;
+  word-break: break-word;
+  line-height: 1.2;
 }
 
 .exercise-item input {
@@ -376,25 +385,11 @@ input:checked + .slider:before {
 }
 
 .exercise-item button {
-  padding: 0.5rem 0.8rem;
-  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
 }
 
-/* Responsive Anpassung für kleine Bildschirme */
-@media (max-width: 480px) {
-  .exercise-item {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(3, auto);
-    gap: 0.4rem;
-  }
-  .exercise-item button {
-    width: 48%;
-  }
-  .exercise-item .btn-group {
-    display: flex;
-    gap: 0.4rem;
-  }
-}
 
 /* ---------------- Exercise Modal ---------------- */
 #exerciseModal .modal-content {
