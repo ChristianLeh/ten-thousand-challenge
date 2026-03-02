@@ -408,6 +408,16 @@ input:checked + .slider:before {
   border-radius: 8px;
 }
 
+.data-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.data-actions button {
+  flex: 1;
+}
+
 
 /* ---------------- Exercise Modal ---------------- */
 #exerciseModal .modal-content {

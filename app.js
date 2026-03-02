@@ -426,6 +426,56 @@ document.getElementById("deleteConfirmBtn").onclick = () => {
   renderCurrent();
 };
 
+document.getElementById("exportBtn").onclick = () => {
+  const data = loadData();
+
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: "application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `10k-challenge-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById("importBtn").onclick = () => {
+  document.getElementById("importFile").click();
+};
+
+document.getElementById("importFile").onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = event => {
+    try {
+      const data = JSON.parse(event.target.result);
+
+      if (!data.exercises || !data.entries) {
+        alert("Ungültige Datei");
+        return;
+      }
+
+      if (!confirm("Bestehende Daten überschreiben?")) return;
+
+      saveData(data);
+
+      init();   // komplette UI neu laden
+    } catch (err) {
+      alert("Fehler beim Import");
+    }
+  };
+
+  reader.readAsText(file);
+};
+
 /* ---------- Init ---------- */
 function init() {
   closeAllModals();
