@@ -293,7 +293,7 @@ function renderStatsBreakdown(year) {
   statsChevron.classList.toggle("open", statsBreakdownOpen);
 }
 
-statsYearSummary.addEventListener("click", () => {
+statsYearSummary.addEventListener("pointerup", () => {
   statsBreakdownOpen = !statsBreakdownOpen;
   renderStatsBreakdown(yearSelect.value);
 });

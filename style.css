@@ -285,6 +285,7 @@ input:checked + .slider:before {
 .stats-summary-toggle {
   cursor: pointer;
   user-select: none;
+  touch-action: manipulation;
 }
 
 .stats-summary-left,
