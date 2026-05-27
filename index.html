@@ -62,10 +62,18 @@
     <!-- Statistik -->
     <section id="statsView" hidden>
       <select id="yearSelect"></select>
-      <div class="year-summary">
-        <span>Gesamt</span>
-        <strong id="yearTotalStats">0</strong>
+      <div class="year-summary stats-summary-toggle">
+        <div class="stats-summary-left">
+          <span>Gesamt</span>
+        </div>
+
+        <div class="stats-summary-right">
+          <strong id="yearTotalStats">0</strong>
+          <span id="statsChevron" class="stats-chevron">⌄</span>
+        </div>
       </div>
+
+      <div id="statsBreakdown" class="stats-breakdown" hidden></div>
 
       <canvas id="statsPlot" width="360" height="150"></canvas>
       <div id="yearGrid"></div>
@@ -76,6 +84,12 @@
       <div id="exerciseList"></div>
       <div class="add-exercise-button-container">
         <button id="addExerciseBtn" class="add-btn">＋</button>
+      </div>
+      <div class="data-actions">
+        <button id="exportBtn">Export Daten</button>
+
+        <button id="importBtn">Import Daten</button>
+        <input type="file" id="importFile" accept="application/json" hidden>
       </div>
     </section>
 
@@ -95,8 +109,9 @@
       <label for="exerciseUnit">Einheit</label>
       <select id="exerciseUnit">
         <option value="Wdh">Wdh</option>
-        <option value="min">Minuten</option>
         <option value="km">km</option>
+        <option value="min">Minuten</option>
+        <option value="h">Stunden</option>
       </select>
 
       <div class="modal-actions">
