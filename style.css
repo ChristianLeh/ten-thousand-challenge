@@ -282,6 +282,93 @@ input:checked + .slider:before {
   color: #3694E9;
 }
 
+.stats-summary-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+.stats-summary-left,
+.stats-summary-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stats-summary-right {
+  margin-left: auto;
+}
+
+.stats-chevron {
+  font-size: 1rem;
+  color: #3694E9;
+  transition: transform 0.2s ease;
+}
+
+.stats-chevron.open {
+  transform: rotate(180deg);
+}
+
+#statsView .year-summary {
+  cursor: pointer;
+  user-select: none;
+}
+
+.stats-breakdown {
+  margin-top: -0.75rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  padding-top: 1.2rem;
+
+  border-radius: 10px;
+
+  background: #f7faff;
+  border: 1px solid #dbe9ff;
+  border-top: none;
+}
+
+.stats-breakdown[hidden] {
+  display: none;
+}
+
+.stats-breakdown-header,
+.stats-breakdown-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px 90px;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.stats-breakdown-header {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #666;
+  margin-bottom: 0.4rem;
+}
+
+.stats-breakdown-header span:nth-child(2),
+.stats-breakdown-header span:nth-child(3) {
+  text-align: right;
+}
+
+.stats-breakdown-row {
+  padding: 0.25rem 0;
+  border-top: 1px solid #e5eefc;
+}
+
+.stats-breakdown-row:first-of-type {
+  border-top: none;
+}
+
+.stats-breakdown-row .raw,
+.stats-breakdown-row .points {
+  text-align: right;
+  font-weight: 600;
+}
+
+.stats-breakdown-row .points {
+  color: #3694E9;
+}
+
 #yearGrid {
   margin-top: 1rem;
 }

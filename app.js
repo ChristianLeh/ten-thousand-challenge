@@ -214,6 +214,11 @@ const yearGrid = document.getElementById("yearGrid");
 const statsPlot = document.getElementById("statsPlot");
 const ctx = statsPlot.getContext("2d");
 
+const statsBreakdown = document.getElementById("statsBreakdown");
+const statsChevron = document.getElementById("statsChevron");
+const statsYearSummary = document.querySelector("#statsView .year-summary");
+let statsBreakdownOpen = false;
+
 function populateYearSelect() {
   const data = loadData();
   const years = new Set();
@@ -235,6 +240,63 @@ function populateYearSelect() {
 function updateYearTotal(year) {
   yearTotalStats.textContent = calculateYearTotal(year);
 }
+
+function renderStatsBreakdown(year) {
+  const data = loadData();
+  statsBreakdown.innerHTML = "";
+
+  const header = document.createElement("div");
+  header.className = "stats-breakdown-header";
+  header.innerHTML = `
+    <span>Übung</span>
+    <span>Rohwerte</span>
+    <span>Punkte</span>
+  `;
+
+  statsBreakdown.appendChild(header);
+
+  const stats = data.exercises.map((ex, idx) => {
+    let raw = 0;
+
+    Object.entries(data.entries).forEach(([date, exs]) => {
+      if (!date.startsWith(year)) return;
+      raw += Number(exs[idx] || 0);
+    });
+
+    const points = Math.floor(raw / (ex.weight || 1));
+
+    return {
+      name: ex.name,
+      unit: ex.unit,
+      raw,
+      points
+    };
+  });
+
+  stats.sort((a, b) => b.points - a.points);
+
+  stats.forEach(stat => {
+    const row = document.createElement("div");
+    row.className = "stats-breakdown-row";
+
+    row.innerHTML = `
+      <span>${stat.name}</span>
+      <span class="raw">${stat.raw} ${stat.unit}</span>
+      <span class="points">${stat.points}</span>
+    `;
+
+    statsBreakdown.appendChild(row);
+  });
+
+  statsBreakdown.hidden = !statsBreakdownOpen;
+
+  statsChevron.classList.toggle("open", statsBreakdownOpen);
+}
+
+statsYearSummary.addEventListener("click", () => {
+  statsBreakdownOpen = !statsBreakdownOpen;
+  renderStatsBreakdown(yearSelect.value);
+});
 
 /* ---------- Kalender ---------- */
 function renderYearCalendar(year) {
@@ -301,6 +363,7 @@ function renderYearCalendar(year) {
   }
 
   updateYearTotal(year);
+  renderStatsBreakdown(year);
   renderPlot(year);
 }
 
