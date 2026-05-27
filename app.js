@@ -74,7 +74,7 @@ function renderExercises() {
     weightInput.disabled = true;
 
     const unitSelect = document.createElement("select");
-    ["Wdh", "min", "km"].forEach(u => {
+    ["Wdh", "min", "h", "km"].forEach(u => {
       const opt = document.createElement("option");
       opt.value = u;
       opt.textContent = u;
